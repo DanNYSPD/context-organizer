@@ -147,7 +147,11 @@
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js",
-    "package-extension": "vsce package"
+    "package-extension": "vsce package",
+    "bump-version": "node scripts/bump-version.js",
+    "bump-version:major": "node scripts/bump-version.js major --yes",
+    "bump-version:minor": "node scripts/bump-version.js minor --yes",
+    "bump-version:patch": "node scripts/bump-version.js patch --yes"
   },
   "devDependencies": {
     "@types/vscode": "^1.83.0",

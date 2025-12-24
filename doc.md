@@ -121,6 +121,61 @@ npm run test
 
 ---
 
+### `bump-version`
+```bash
+npm run bump-version
+```
+**Purpose:** Suggests a version bump based on the last commit message using conventional commits.
+
+**What it does:** 
+- Analyzes the last git commit message
+- Suggests version bump type (major/minor/patch) based on:
+  - `feat:` or `feat(scope):` → bumps **minor** version (x.MINOR.x)
+  - `fix:` or `fix(scope):` → bumps **patch** version (x.x.PATCH)
+  - `BREAKING CHANGE` or `feat!:`/`fix!:` → bumps **major** version (MAJOR.x.x)
+  - Other commit types → bumps **patch** version (x.x.PATCH)
+- Shows what the new version would be (doesn't apply changes)
+
+**When to use:** Before releasing to see what version bump is appropriate based on your commits.
+
+---
+
+### `bump-version:major`
+```bash
+npm run bump-version:major
+```
+**Purpose:** Force bumps the major version (e.g., 1.0.0 → 2.0.0).
+
+**What it does:** Updates `package.json` with the new major version immediately.
+
+**When to use:** When making breaking changes that aren't reflected in commit messages.
+
+---
+
+### `bump-version:minor`
+```bash
+npm run bump-version:minor
+```
+**Purpose:** Force bumps the minor version (e.g., 1.0.0 → 1.1.0).
+
+**What it does:** Updates `package.json` with the new minor version immediately.
+
+**When to use:** When adding new features that aren't reflected in commit messages.
+
+---
+
+### `bump-version:patch`
+```bash
+npm run bump-version:patch
+```
+**Purpose:** Force bumps the patch version (e.g., 1.0.0 → 1.0.1).
+
+**What it does:** Updates `package.json` with the new patch version immediately.
+
+**When to use:** When making bug fixes that aren't reflected in commit messages.
+
+---
+
 ## Common Development Workflows
 
 ### Starting Development
@@ -147,6 +202,12 @@ Ensure your code passes linting and all tests pass.
 npm run package
 ```
 Generate an optimized build ready for distribution.
+
+### Version Management
+```bash
+npm run bump-version
+```
+Suggest a version bump based on the last commit message following semantic versioning conventions.
 
 ---
 
