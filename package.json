@@ -52,6 +52,10 @@
       {
         "command": "context-organizer.copyContextContents",
         "title": "Copy Context Contents to Clipboard"
+      },
+      {
+        "command": "context-organizer.addNoteToFile",
+        "title": "Add Note"
       }
     ],
     "menus": { 
@@ -59,6 +63,11 @@
         {
           "command": "context-organizer.addToFileSection",
           "when": "resourceLangId != undefined"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "context-organizer.addToFileSection"
         }
       ],
       "editor/title/context": [
@@ -101,6 +110,10 @@
         {
           "command": "context-organizer.copyContextContents",
           "when": "view == contextOrganizerView && viewItem == section"
+        },
+        {
+          "command": "context-organizer.addNoteToFile",
+          "when": "view == contextOrganizerView && viewItem == file"
         }
       ]
     },
@@ -132,7 +145,8 @@
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
+    "test": "node ./out/test/runTest.js",
+    "package-extension": "vsce package"
   },
   "devDependencies": {
     "@types/vscode": "^1.83.0",

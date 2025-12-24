@@ -10,6 +10,7 @@ import { renameContextCommand } from './renameContextCommand';
 import { removeContextCommand } from './removeContextCommand';
 import { copyContextPathsCommand } from './copyContextPathsCommand';
 import { copyContextContentsCommand } from './copyContextContentsCommand';
+import { addNoteToFileCommand } from './addNoteToFileCommand';
 
 export function registerCommands(extension: vscode.ExtensionContext) {
   let workspaceRoot = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri.fsPath : '';
@@ -62,5 +63,11 @@ export function registerCommands(extension: vscode.ExtensionContext) {
     copyContextContentsCommand(section);
   });
   extension.subscriptions.push(copyContextContentsDisposable);
+
+  let addNoteToFileDisposable = vscode.commands.registerCommand('context-organizer.addNoteToFile', async (file: File) => {
+    await addNoteToFileCommand(file);
+    dataProvider.refresh();
+  });
+  extension.subscriptions.push(addNoteToFileDisposable);
 
 }

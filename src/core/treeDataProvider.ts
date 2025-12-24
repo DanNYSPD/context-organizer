@@ -2,12 +2,31 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as vscode from 'vscode';
 
+/**
+ * TreeDataProvider manages the tree view for the Context Organizer extension.
+ * It loads contexts from the contexts.json file and displays them in a hierarchical structure.
+ * 
+ * The tree structure consists of:
+ * - Sections (contexts) at the root level
+ * - Optional folders (when showFolders config is enabled)
+ * - Files within sections or folders
+ */
 export class TreeDataProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 	private _items: vscode.TreeItem[] = [];
 
+	/**
+	 * Creates a new TreeDataProvider instance.
+	 * @param workspaceRoot - The absolute path to the workspace root directory
+	 */
 	constructor(private workspaceRoot: string) {
 		this.loadConfig();
 	}
+
+	/**
+	 * Handles the loading and parsing of the contexts.json configuration file.
+	 * Creates Section items with their associated files based on the configuration.
+	 * @param configPath - Absolute path to the contexts.json file
+	 */
 	private handleLoadConfig(configPath:string){
 		const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
 			const showFolders = config.configs.showFolders;
@@ -22,6 +41,12 @@ export class TreeDataProvider implements vscode.TreeDataProvider<vscode.TreeItem
 				this._items.push(new Section(sectionName, sectionItems));
 			}
 	}
+
+	/**
+	 * Loads the contexts.json configuration file and populates the tree view.
+	 * If the file doesn't exist, shows a warning message.
+	 * If there's an error parsing the file, shows an error message with details.
+	 */
 	private loadConfig() {
 		this._items = [];
 		const configPath = path.join(this.workspaceRoot, '.vscode', 'contexts.json');
@@ -45,6 +70,12 @@ export class TreeDataProvider implements vscode.TreeDataProvider<vscode.TreeItem
 		}
 	}
 
+	/**
+	 * Adds a file path to the tree structure, creating intermediate folder nodes if showFolders is enabled.
+	 * @param parent - The parent container array to add items to
+	 * @param fullPath - The relative file path (e.g., 'src/core/file.ts')
+	 * @param contextName - The name of the context this file belongs to
+	 */
 	private addToTree(parent: Container[], fullPath: string, contextName: string) {
 		const parts = fullPath.split(path.sep);
 		let currentLevel: Container[] = parent;
@@ -79,6 +110,11 @@ export class TreeDataProvider implements vscode.TreeDataProvider<vscode.TreeItem
 		}
 	}
 
+	/**
+	 * Returns the children of a tree item.
+	 * @param element - The tree item to get children for. If undefined, returns root items.
+	 * @returns A promise resolving to an array of tree items
+	 */
 	getChildren(element?: vscode.TreeItem): Thenable<vscode.TreeItem[]> {
 		if (element instanceof Container) {
 			return Promise.resolve(element.children);
@@ -86,28 +122,58 @@ export class TreeDataProvider implements vscode.TreeDataProvider<vscode.TreeItem
 		return Promise.resolve(this._items);
 	}
 
+	/**
+	 * Returns the tree item representation of the given element.
+	 * @param element - The element to get the tree item for
+	 * @returns The tree item representation
+	 */
 	getTreeItem(element: vscode.TreeItem): vscode.TreeItem {
 		return element;
 	}
 
+	/** Event emitter for tree data changes */
 	private _onDidChangeTreeData: vscode.EventEmitter<vscode.TreeItem | undefined> = new vscode.EventEmitter<vscode.TreeItem | undefined>();
+	/** Event that fires when tree data changes */
 	readonly onDidChangeTreeData: vscode.Event<vscode.TreeItem | undefined> = this._onDidChangeTreeData.event;
 
+	/**
+	 * Refreshes the tree view by reloading the configuration and notifying listeners.
+	 * Called when contexts.json is modified or when contexts are added/removed.
+	 */
 	refresh(): void {
 		this.loadConfig();
 		this._onDidChangeTreeData.fire(undefined);
 	}
 }
 
+/**
+ * Abstract base class for tree items that can contain children.
+ * Used as the parent class for Section, Folder, and File items.
+ */
 abstract class Container extends vscode.TreeItem {
+	/** Child items of this container */
 	children: vscode.TreeItem[] = [];
 
+	/**
+	 * Creates a new Container.
+	 * @param label - The display label for the tree item
+	 * @param collapsibleState - Whether the item is collapsed, expanded, or not collapsible
+	 */
 	constructor(label: string, collapsibleState: vscode.TreeItemCollapsibleState) {
 		super(label, collapsibleState);
 	}
 }
 
+/**
+ * Represents a context section in the tree view.
+ * Sections are top-level items that contain files and folders.
+ */
 export class Section extends Container {
+	/**
+	 * Creates a new Section.
+	 * @param label - The name of the context/section
+	 * @param children - Array of child items (files and folders)
+	 */
 	constructor(label: string, children: vscode.TreeItem[] = []) {
 		super(label, vscode.TreeItemCollapsibleState.Collapsed);
 		this.iconPath = {
@@ -119,7 +185,15 @@ export class Section extends Container {
 	}
 }
 
+/**
+ * Represents a folder in the tree view.
+ * Only displayed when showFolders configuration is enabled.
+ */
 export class Folder extends Container {
+	/**
+	 * Creates a new Folder.
+	 * @param label - The folder name
+	 */
 	constructor(label: string) {
 		super(label, vscode.TreeItemCollapsibleState.Collapsed);
 		this.contextValue = 'folder';
@@ -127,7 +201,16 @@ export class Folder extends Container {
 	}
 }
 
+/**
+ * Represents a file in the tree view.
+ * Clicking a file opens it in the editor.
+ */
 export class File extends Container {
+	/**
+	 * Creates a new File.
+	 * @param filePath - The absolute path to the file
+	 * @param contextName - The name of the context this file belongs to
+	 */
 	constructor(public filePath: string, contextName: string) {
 		super(path.basename(filePath), vscode.TreeItemCollapsibleState.None);
 		this.resourceUri = vscode.Uri.file(filePath);
@@ -143,9 +226,23 @@ export class File extends Container {
 		const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
 		const showFolders = config.configs.showFolders;
 
+		// Get the relative path for notes lookup
+		const workspaceRoot = vscode.workspace.rootPath || '';
+		const relativePath = path.relative(workspaceRoot, filePath);
+
+		// Check if there's a note for this file
+		if (config.notes && config.notes[relativePath]) {
+			const note = config.notes[relativePath];
+			// Show note as tooltip
+			this.tooltip = `${path.basename(filePath)}\n\n📝 Note: ${note}`;
+		}
+
 		if (!showFolders) {
 			const parts = filePath.split(path.sep);
 			this.description = parts[parts.length - 2];
+		} else if (config.notes && config.notes[relativePath]) {
+			// If showing folders, add note indicator to description
+			this.description = '📝';
 		}
 	}
 }
