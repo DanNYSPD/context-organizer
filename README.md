@@ -9,18 +9,37 @@ Tired of getting lost in projects where the files that matter are in folders far
 
 ## Features
 
-1. You can choose to show folders tree or only the files name:
+### File Organization
+
+1. **Flexible View Modes**: Choose to display folders in a tree structure or show only file names for a cleaner view:
 
 ![folder-files](https://github.com/devaniljr/context-organizer/assets/7834279/23e8ad64-86fe-48cf-932f-7c996fd972c9)
 
+### Context Management
 
-2. **Add to context**: Right-click on any file in the explorer or in the tab and select `Add to context...` to add it to a specific context.
-  
-2. **New Context**: Click on the `New Context` button in the "Contexts" panel to create a new context.
-  
-3. **Remove from context**: Right-click on any file within a context in the "Contexts" pane and select `Remove from context` to remove it.
+2. **Add to Context**: Right-click on any file in the explorer, editor tab, or within the editor and select `Add to context...` to add it to a specific context.
 
-4. **Copy Contents from Context**: Useful for AI purposes, you can copy all content from the files context to clipboard.
+3. **New Context**: Click on the `New Context` button in the Context Organizer panel to create a new context for organizing related files.
+
+4. **Rename Context**: Right-click on any context and select `Rename Context` to change its name.
+
+5. **Remove Context**: Right-click on any context and select `Remove Context` to delete the entire context and all its file references.
+
+### File Operations
+
+6. **Remove from Context**: Right-click on any file within a context and select `Remove from context` to remove it from that specific context.
+
+7. **Add to Stage**: Right-click on any file within a context and select `Add to stage` to stage the file for git commit.
+
+8. **Add Note**: Right-click on any file within a context and select `Add Note` to attach notes or comments to specific files. Files with notes display a 📝 indicator and show the note on hover.
+
+### Clipboard Operations
+
+9. **Copy Context Contents**: Right-click on any context and select `Copy Context Contents to Clipboard` to copy all file contents from that context. Useful for providing context to AI tools.
+
+10. **Copy Context Paths**: Right-click on any context and select `Copy Context Paths to clipboard` to copy all file paths in that context.
+
+11. **Copy Relative Path**: Right-click on any file and select `Copy relative path to clipboard` to copy the file's relative path to your workspace.
 
 ## Installation
 
@@ -39,15 +58,43 @@ You can configure the extension settings by changing the `.vscode/contexts.json`
 
 ### `contexts`
 
-The file contains an array of contexts. Each context has a `name` and an array of `files` that are automatically set with the UI.
+The file contains an object of contexts. Each context has a name (as the key) and an array of file paths (as the value) that are automatically set with the UI.
+
+### `notes`
+
+An optional object that stores notes for specific files. The key is the relative file path, and the value is the note text.
 
 ### `showFolders`
 
-You can choose to show or hide the folders in the "Contexts" pane by setting the `showFolders` property to `true` or `false`.
+You can choose to show or hide the folders in the Context Organizer pane by setting the `showFolders` property to `true` or `false`.
 
 ### `orderAlphabetically`
 
-If set to true, new files will be added in alphabetically order.
+If set to true, new files will be added in alphabetical order.
+
+### Example `contexts.json`
+
+```json
+{
+  "contexts": {
+    "Frontend": [
+      "src/components/Header.tsx",
+      "src/components/Footer.tsx"
+    ],
+    "Backend": [
+      "src/api/routes.ts",
+      "src/api/controllers.ts"
+    ]
+  },
+  "notes": {
+    "src/components/Header.tsx": "Need to refactor this component"
+  },
+  "configs": {
+    "showFolders": false,
+    "orderAlphabetically": true
+  }
+}
+```
 
 ## Known Issues
 
