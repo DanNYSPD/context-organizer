@@ -7,7 +7,7 @@ import * as path from 'path';
  * Prompts the user for text input and stores it in the notes section of contexts.json.
  */
 export async function addNoteToFileCommand(fileItem: any) {
-	const workspaceRoot = vscode.workspace.rootPath;
+	const workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
 	if (!workspaceRoot) {
 		vscode.window.showErrorMessage('No workspace folder is open');
 		return;
