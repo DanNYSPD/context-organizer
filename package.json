@@ -15,7 +15,10 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onCommand:context-organizer.*",
+    "onView:contextOrganizerView"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
