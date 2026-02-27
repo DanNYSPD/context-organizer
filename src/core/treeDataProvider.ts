@@ -222,12 +222,12 @@ export class File extends Container {
 		this.contextValue = 'file';
 		this.id = filePath + contextName;
 
-		const configPath = path.join(vscode.workspace.rootPath || '', '.vscode', 'contexts.json');
+		const configPath = path.join(vscode.workspace.workspaceFolders?.[0]?.uri.fsPath|| '', '.vscode', 'contexts.json');
 		const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
 		const showFolders = config.configs.showFolders;
 
 		// Get the relative path for notes lookup
-		const workspaceRoot = vscode.workspace.rootPath || '';
+		const workspaceRoot =vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '';
 		const relativePath = path.relative(workspaceRoot, filePath);
 
 		// Check if there's a note for this file
