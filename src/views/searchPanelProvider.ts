@@ -194,7 +194,9 @@ export class SearchPanelProvider implements vscode.WebviewViewProvider {
   }
 
   private async openSearchMatch(absolutePath: string, lineNumber: number) {
+    logger.log('🔗 openSearchMatch called:', { absolutePath, lineNumber });
     try {
+      logger.log('📂 Opening file...');
       const uri = vscode.Uri.file(absolutePath);
       const document = await vscode.workspace.openTextDocument(uri);
       const editor = await vscode.window.showTextDocument(document);
@@ -206,7 +208,9 @@ export class SearchPanelProvider implements vscode.WebviewViewProvider {
 
       editor.selection = new vscode.Selection(range.start, range.start);
       editor.revealRange(range, vscode.TextEditorRevealType.InCenter);
+      logger.log('✅ File opened successfully at line', lineNumber);
     } catch (error) {
+      logger.error('❌ Error opening file:', error);
       vscode.window.showErrorMessage(
         `Failed to open file: ${error instanceof Error ? error.message : String(error)}`
       );

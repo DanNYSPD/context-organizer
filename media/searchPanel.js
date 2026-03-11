@@ -149,8 +149,9 @@ function displayResults(message) {
     
     fileResult.matches.forEach(match => {
       const linePreview = match.lineText.replace(/</g, '&lt;').replace(/>/g, '&gt;').slice(0, 120);
+      // Store data attributes instead of onclick for better CSP compliance
       html += `
-        <div class="match-item" onclick="openMatch('${escapeHtml(fileResult.absolutePath)}', ${match.lineNumber})">
+        <div class="match-item" data-absolute-path="${escapeHtml(fileResult.absolutePath)}" data-line-number="${match.lineNumber}">
           <span class="match-line-num">Line ${match.lineNumber}:</span>
           <span class="match-preview">${escapeHtml(linePreview)}</span>
         </div>
@@ -164,6 +165,7 @@ function displayResults(message) {
   });
   
   resultsContainer.innerHTML = html;
+  attachMatchClickListeners();
 }
 
 function displayNoFiles() {
@@ -210,6 +212,22 @@ function openMatch(absolutePath, lineNumber) {
     command: 'openMatch',
     absolutePath,
     lineNumber
+  });
+}
+
+function attachMatchClickListeners() {
+  const matchItems = document.querySelectorAll('.match-item');
+  matchItems.forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      const absolutePath = item.getAttribute('data-absolute-path');
+      const lineNumber = parseInt(item.getAttribute('data-line-number'), 10);
+      if (absolutePath && lineNumber) {
+        openMatch(absolutePath, lineNumber);
+      }
+    });
+    // Make it look clickable
+    item.style.cursor = 'pointer';
   });
 }
 
