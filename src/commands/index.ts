@@ -11,6 +11,7 @@ import { removeContextCommand } from './removeContextCommand';
 import { copyContextPathsCommand } from './copyContextPathsCommand';
 import { copyContextContentsCommand } from './copyContextContentsCommand';
 import { addNoteToFileCommand } from './addNoteToFileCommand';
+import { searchContextsCommand } from './searchContextsCommand';
 
 export function registerCommands(extension: vscode.ExtensionContext) {
   let workspaceRoot = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri.fsPath : '';
@@ -69,5 +70,11 @@ export function registerCommands(extension: vscode.ExtensionContext) {
     dataProvider.refresh();
   });
   extension.subscriptions.push(addNoteToFileDisposable);
+
+  // Search command
+  let searchContextsDisposable = vscode.commands.registerCommand('context-organizer.searchContexts', async () => {
+    await searchContextsCommand();
+  });
+  extension.subscriptions.push(searchContextsDisposable);
 
 }

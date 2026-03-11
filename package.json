@@ -61,6 +61,10 @@
       {
         "command": "context-organizer.addNoteToFile",
         "title": "Add Note"
+      },
+      {
+        "command": "context-organizer.searchContexts",
+        "title": "Search in Contexts"
       }
     ],
     "menus": {
@@ -83,6 +87,11 @@
       "view/title": [
         {
           "command": "context-organizer.createNewContext",
+          "when": "view == contextOrganizerView",
+          "group": "navigation"
+        },
+        {
+          "command": "context-organizer.searchContexts",
           "when": "view == contextOrganizerView",
           "group": "navigation"
         }
@@ -136,6 +145,11 @@
         {
           "id": "contextOrganizerView",
           "name": ""
+        },
+        {
+          "id": "contextOrganizerSearchPanel",
+          "name": "Search",
+          "type": "webview"
         }
       ]
     }

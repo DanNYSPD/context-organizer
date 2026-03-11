@@ -131,6 +131,14 @@ export class TreeDataProvider implements vscode.TreeDataProvider<vscode.TreeItem
 		return element;
 	}
 
+	/**
+	 * Returns all contexts (sections) in the tree.
+	 * @returns An array of Section items
+	 */
+	getContexts(): Section[] {
+		return this._items.filter((item): item is Section => item instanceof Section);
+	}
+
 	/** Event emitter for tree data changes */
 	private _onDidChangeTreeData: vscode.EventEmitter<vscode.TreeItem | undefined> = new vscode.EventEmitter<vscode.TreeItem | undefined>();
 	/** Event that fires when tree data changes */
